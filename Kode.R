@@ -51,14 +51,15 @@ orders <- orders %>%
   mutate(Weekday = weekdays(as.Date(orders$OrderDate)))
 
 
-
-# Join - Erstatning fro lookup funktioner i Excel
+# Join - Erstatning for lookup funktioner i Excel
 Salesdata <- customers %>%
   left_join(orders, by = c("CustomerID" = "CustomerID")) %>% 
   left_join(order_details, by = c("OrderID" = "OrderID")) %>% 
   select(CustomerID, 
          CompanyName, 
          Country, 
+         Lat,
+         Lng,
          OrderDate, 
          Weekday, 
          Total)
@@ -67,8 +68,8 @@ Salesdata <- customers %>%
 # Group By - Pivot Tabel i Excel
 # SalesByCountry
 SalesByCountry <- Salesdata %>% 
-  group_by(Country) %>% 
-  summarise(Total = sum(Total, na.rm=TRUE))
+  group_by(Country, Lat, Lng) %>% 
+  summarise(Total = sum(Total, na.rm=TRUE)) 
 
 
 # SalesByCategory
@@ -93,14 +94,15 @@ SalesByWeekday <- SalesByWeekday[order(SalesByWeekday$Weekday),]
 # Fjern tomme
 SalesByWeekday <- na.omit(SalesByWeekday)
 
-SalesByWeekday
-
 
 # Plot - ggplot
 # https://ggplot2.tidyverse.org/
 # 
 # SalesByCountry - Barplot
-ggplot(SalesByCountry) +
+SalesByCountryTop15 <- arrange(SalesByCountry, desc(Total)) 
+SalesByCountryTop15 <- head(SalesByCountryTop15, 15)
+
+SalesByCountryTop15Plot <- ggplot(SalesByCountryTop15) +
   geom_bar(mapping = aes(x = reorder(Country, Total), y = Total), stat = "identity", fill="lightblue") +
   coord_flip() +
   scale_y_continuous(name="Total sales by country", labels=function(x) format(x, big.mark = ".", decimal.mark = ",", scientific = FALSE)) +
@@ -108,22 +110,23 @@ ggplot(SalesByCountry) +
   ggtitle("Sales by country") +
   theme_bw()
 
+SalesByCountryTop15Plot # Vis Plot
+
 
 # SalesByWeekday Pct - Pieplot
-
-
-
-SalesByWeekday$percent <- SalesByWeekday$Total / (sum(SalesByWeekday$Total, na.rm=TRUE)) * 100
+SalesByWeekday$percent <- SalesByWeekday$Total / (sum(SalesByWeekday$Total, na.rm=TRUE)) * 100 # Pct
 SalesByWeekday$ymax = cumsum(SalesByWeekday$percent)
 SalesByWeekday$ymin = c(0, head(SalesByWeekday$ymax, n=-1))
 
-ggplot(SalesByWeekday, aes(fill=Weekday, ymax=ymax, ymin=ymin, xmax=4, xmin=3)) +
+SalesByWeekdayPlot <- ggplot(SalesByWeekday, aes(fill=Weekday, ymax=ymax, ymin=ymin, xmax=4, xmin=3)) +
   geom_rect(color='blue') +
   coord_polar(theta="y") +
   xlim(1, 4) +
   geom_text(aes(label=paste( round(percent, digits=0),"%"), x=3.5, y=(ymin+ymax)/2), inherit.aes = TRUE, show.legend = FALSE) +
-  ggtitle("Sales i Pct by weekday") +
+  ggtitle("Sales Pct by weekday") +
   theme_void()
+
+SalesByWeekdayPlot # Vis Plot
 
 
 
