@@ -1,7 +1,7 @@
 # Webinar IDA
 #
 # Tue Hellstern
-# 28-10-2020
+# 02-11-2020
 
 # Intro til RStudio
 # Online & Web
@@ -32,10 +32,6 @@ orders <- getURL("https://raw.githubusercontent.com/officegeek/data/master/order
 orders <- read.csv2(text = orders, fileEncoding="UTF-8-BOM", stringsAsFactors=FALSE)
 order_details <-  getURL("https://raw.githubusercontent.com/officegeek/data/master/order_details.csv")
 order_details <- read.csv2(text = order_details, fileEncoding="UTF-8-BOM", stringsAsFactors=FALSE)
-
-# Excel
-# order_details <- getURL("https://github.com/officegeek/data/raw/master/order_details.xlsx")
-# order_details <- read_excel(order_details)
 
 
 # DPLYR - Data
@@ -99,10 +95,10 @@ SalesByWeekday <- na.omit(SalesByWeekday)
 # https://ggplot2.tidyverse.org/
 # 
 # SalesByCountry - Barplot
-SalesByCountryTop15 <- arrange(SalesByCountry, desc(Total)) 
-SalesByCountryTop15 <- head(SalesByCountryTop15, 15)
+SalesByCountryTop5 <- arrange(SalesByCountry, desc(Total)) 
+SalesByCountryTop5 <- head(SalesByCountryTop5, 5)
 
-SalesByCountryTop15Plot <- ggplot(SalesByCountryTop15) +
+SalesByCountryTop5Plot <- ggplot(SalesByCountryTop5) +
   geom_bar(mapping = aes(x = reorder(Country, Total), y = Total), stat = "identity", fill="lightblue") +
   coord_flip() +
   scale_y_continuous(name="Total sales by country", labels=function(x) format(x, big.mark = ".", decimal.mark = ",", scientific = FALSE)) +
@@ -110,7 +106,7 @@ SalesByCountryTop15Plot <- ggplot(SalesByCountryTop15) +
   ggtitle("Sales by country") +
   theme_bw()
 
-SalesByCountryTop15Plot # Vis Plot
+SalesByCountryTop5Plot # Vis Plot
 
 
 # SalesByWeekday Pct - Pieplot
