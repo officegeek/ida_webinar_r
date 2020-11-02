@@ -1,5 +1,4 @@
 # Webinar IDA
-#
 # Tue Hellstern
 # 02-11-2020
 #
