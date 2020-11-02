@@ -103,7 +103,7 @@ SalesByCountryTop15 <- arrange(SalesByCountry, desc(Total))
 SalesByCountryTop15 <- head(SalesByCountryTop15, 15)
 
 SalesByCountryTop15Plot <- ggplot(SalesByCountryTop15) +
-  geom_bar(mapping = aes(x = reorder(Country, Total), y = Total), stat = "identity", fill="lightblue") +
+  geom_bar(mapping = aes(x = reorder(Country, Tota), y = Total), stat = "identity", fill="lightblue") +
   coord_flip() +
   scale_y_continuous(name="Total sales by country", labels=function(x) format(x, big.mark = ".", decimal.mark = ",", scientific = FALSE)) +
   xlab("Country") +
